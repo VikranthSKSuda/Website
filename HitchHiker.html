@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HitchHiker</title>
+    <!-- Load Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Use Inter font */
+        body {
+            font-family: "Inter", sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4 sm:p-8">
+
+    <!-- Main container card -->
+    <div id="mainContainer" class="w-full max-w-6xl h-[90vh] bg-white shadow-xl rounded-lg overflow-hidden flex flex-col transition-all duration-500 ease-in-out">
+
+        <!-- Header/Input Section (Added ID to hide it later) -->
+        <div id="headerSection" class="p-4 sm:p-6 border-b border-gray-200 bg-gray-50 flex-shrink-0 transition-all duration-500">
+            <!-- New Flex container for logo and title -->
+            <div class="flex items-center gap-3 mb-4">
+                <!-- SVG Mountain Icon -->
+                <svg class="h-8 w-8 text-gray-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 20.25l7.5-7.5L18 20.25M4.5 15.75l3-3l3 3M19.5 15.75l-3-3l-3 3" />
+                </svg>
+                
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">What is your favorite website</h1>
+            </div>
+            
+            <!-- Input and Button Flex Container -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input
+                    type="text"
+                    id="urlInput"
+                    placeholder="Enter a full URL (e.g., https://example.com)"
+                    class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <button
+                    id="loadButton"
+                    class="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200"
+                >
+                    Load Website
+                </button>
+            </div>
+            
+            <!-- Helper Text -->
+            <p class="text-xs text-gray-500 mt-3">
+                <strong>Note:</strong> Many websites (like Google, Facebook, etc.) actively block
+                being loaded inside an iframe for security reasons.
+            </p>
+        </div>
+
+        <!-- IFrame Content Area -->
+        <div class="flex-grow bg-gray-200 relative">
+            <iframe
+                id="contentFrame"
+                class="w-full h-full border-0 absolute inset-0"
+                src="about:blank"
+                title="Loaded Content"
+                allow="camera; microphone; geolocation; fullscreen; autoplay; payment; clipboard-read; clipboard-write; encrypted-media; picture-in-picture; xr-spatial-tracking; usb; serial;"
+            >
+                Your browser does not support iframes.
+            </iframe>
+
+        </div>
+
+    </div>
+
+    <!-- Hidden Reset Button (Appears only in full screen) -->
+    <button 
+        id="resetButton" 
+        class="hidden fixed top-4 right-4 z-[60] bg-white/90 text-gray-800 p-2 rounded-full shadow-lg hover:bg-blue-50 transition-all border border-gray-200"
+        title="Go Back to Menu"
+    >
+        <!-- X Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+    </button>
+
+    <script>
+        // Get references to the HTML elements
+        const urlInput = document.getElementById('urlInput');
+        const loadButton = document.getElementById('loadButton');
+        const contentFrame = document.getElementById('contentFrame');
+        const mainContainer = document.getElementById('mainContainer');
+        const headerSection = document.getElementById('headerSection');
+        const resetButton = document.getElementById('resetButton');
+
+        // Function to load the URL into the iframe
+        function loadUrl() {
+            let url = urlInput.value.trim();
+
+            if (!url) return;
+
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://' + url;
+                urlInput.value = url;
+            }
+
+            // 1. Expand the container to fill the screen
+            mainContainer.classList.remove('max-w-6xl', 'h-[90vh]', 'rounded-lg', 'shadow-xl', 'p-4', 'sm:p-8');
+            mainContainer.classList.add('fixed', 'inset-0', 'h-full', 'w-full', 'z-50', 'rounded-none');
+            
+            // 2. Hide the header section
+            headerSection.classList.add('hidden');
+
+            // 3. Show the reset button
+            resetButton.classList.remove('hidden');
+
+            // 4. Set the iframe's source
+            contentFrame.src = url;
+        }
+
+        // Function to restore the menu
+        function resetView() {
+            // Restore container styles
+            mainContainer.classList.add('max-w-6xl', 'h-[90vh]', 'rounded-lg', 'shadow-xl');
+            mainContainer.classList.remove('fixed', 'inset-0', 'h-full', 'w-full', 'z-50', 'rounded-none');
+            
+            // Show header
+            headerSection.classList.remove('hidden');
+            
+            // Hide reset button
+            resetButton.classList.add('hidden');
+        }
+
+        // Add event listeners
+        loadButton.addEventListener('click', loadUrl);
+        resetButton.addEventListener('click', resetView);
+
+        urlInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                loadUrl();
+            }
+        });
+    </script>
+
+</body>
+</html>
